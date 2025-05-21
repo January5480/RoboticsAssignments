@@ -1,0 +1,81 @@
+Microsoft (R) Macro Assembler Version 6.11		    01/03/25 08:42:28
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码 
+ 0000 50			    M DB 80
+ 0001 3C			    N DB 60
+ 0002 03			    L DB 3 
+ 0003 00			    OUT1 DB 0
+ 0004				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  BE 0000 R		    MOV SI,OFFSET M
+ 0008  8A 04			    MOV AL,[SI]
+ 000A  8A F8			    MOV BH,AL
+ 000C  BE 0001 R		    MOV SI,OFFSET N
+ 000F  8A 1C			    MOV BL,[SI]
+ 0011  BE 0002 R		    MOV SI,OFFSET L
+ 0014  8A 0C			    MOV CL,[SI]
+ 0016  02 C3			    ADD AL,BL
+ 0018  B5 03			    MOV CH,3
+ 001A  F6 E5			    MUL CH
+ 001C  8A EF			    MOV CH,BH
+ 001E  D0 E7			    SHL BH,1
+ 0020  02 FD			    ADD BH,CH
+ 0022  B1 08			    MOV CL,8
+ 0024  D3 EB			    SHR BX,CL
+ 0026  03 C3			    ADD AX,BX
+ 0028  8A FC			    MOV BH,AH
+ 002A  8A D0			    MOV DL,AL
+ 002C  B4 06			    MOV AH,6
+ 002E  CD 21			    INT 21H
+ 0030  8A C7			    MOV AL,BH
+ 0032  8A D7			    MOV DL,BH
+ 0034  B4 06			    MOV AH,6
+ 0036  CD 21			    INT 21H
+				    
+				    
+				    
+ 0038  B4 4C			    MOV AH,4CH
+ 003A  CD 21			    INT 21H
+ 003C				CODES ENDS
+				    END START
+
+Microsoft (R) Macro Assembler Version 6.11		    01/03/25 08:42:28
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 003C	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0004	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+L  . . . . . . . . . . . . . . .	Byte	 0002	  DATAS	
+M  . . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+N  . . . . . . . . . . . . . . .	Byte	 0001	  DATAS	
+OUT1 . . . . . . . . . . . . . .	Byte	 0003	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

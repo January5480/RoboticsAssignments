@@ -1,0 +1,81 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 08:49:01
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 0000			    x dw ?
+ 0002 0010			    n dw 16   ;规定进制数，这里是16进制
+ 0004				DATAS ENDS
+ 0000				STACKS SEGMENT	stack
+ 0000  0100 [			      db 100h dup(?)
+        00
+       ]
+ 0100				STACKS ENDS
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+ 0005  BB 0000			     mov bx,0  ;bx作为一个累加存储作用
+ 0008				L1:;循环输入
+ 0008  B4 01				mov ah,1   ;1号调用，输入一个字符
+ 000A  CD 21				int 21h  
+ 000C  3C 0D				cmp al,0dh  ;回车就跳出
+ 000E  74 15				jz  L2
+					
+ 0010  3C 39				cmp al,39H
+ 0012  77 04				ja upperThanNine        
+ 0014				lowerThanNine:
+ 0014  2C 30			 			sub al,30h  ;减30h,让0~9数字字符成为数字
+ 0016  EB 02			 			jmp calcu
+ 0018				upperThanNine:
+ 0018  2C 37						sub al,37H ;让字母A~F转化为数字	
+ 001A				calcu:
+ 001A  B4 00			    mov ah,0
+ 001C  93				xchg bx,ax
+ 001D  F7 26 0002 R			mul n       ;乘以16
+ 0021  03 D8				add bx,ax   ;再加上新输入进来的
+ 0023  EB E3				jmp L1     ;循环输入
+ 0025				L2: 
+ 0025  89 1E 0000 R			mov x,bx
+					
+ 0029  8B 16 0000 R			MOV DX,X
+ 002D  B4 09				MOV AH,09H
+ 002F  CD 21				INT 21H
+ 0031  B4 4C			    MOV AH,4CH
+ 0033  CD 21			    INT 21H
+				    
+ 0035				CODES ENDS
+				    END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 08:49:01
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0035	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0004	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0100	  Para	  Stack	  
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+L1 . . . . . . . . . . . . . . .	L Near	 0008	  CODES	
+L2 . . . . . . . . . . . . . . .	L Near	 0025	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+calcu  . . . . . . . . . . . . .	L Near	 001A	  CODES	
+lowerThanNine  . . . . . . . . .	L Near	 0014	  CODES	
+n  . . . . . . . . . . . . . . .	Word	 0002	  DATAS	
+upperThanNine  . . . . . . . . .	L Near	 0018	  CODES	
+x  . . . . . . . . . . . . . . .	Word	 0000	  DATAS	
+
+	   0 Warnings
+	   0 Errors

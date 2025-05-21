@@ -1,0 +1,110 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 11:42:27
+tempfile.asm						     Page 1 - 1
+
+
+				.MODEL SMALL
+				.STACK 100H
+ 0000				.DATA
+				    ORG 3000H ; 数据段首地址
+ = 0008				    BYTE_COUNT EQU 08H      ; 字节数
+ 3000 00000012 0000008B		    DATA_ARRAY DD  12h, 8Bh, 0E5h, 0EBh, 47h, 9Dh, 0EFh,57H ; 用于存储数据的数组
+       000000E5 000000EB
+       00000047 0000009D
+       000000EF 00000057
+ 0000				.CODE
+ 0000				MAIN PROC
+ 0000  B8 ---- R		    MOV AX, @DATA
+ 0003  8E D8			    MOV DS, AX
+
+				    ; 初始化数据段地址
+ 0005  BE 3000 R		    MOV SI, OFFSET DATA_ARRAY
+				    ; 初始化字节数
+ 0008  B9 0008			    MOV CX, BYTE_COUNT
+
+ 000B  E8 0004			    CALL FIND_MAX_MIN
+
+ 000E  B4 4C			    MOV AH, 4CH
+ 0010  CD 21			    INT 21H
+ 0012				MAIN ENDP
+
+ 0012				FIND_MAX_MIN PROC
+				    ;PUSH AX
+				    ;PUSH BX
+				    ;PUSH CX
+				    ;PUSH DX
+
+ 0012  BB 0000			    MOV BX, 0      ; 用于存储最大值
+ 0015  BA 00FF			    MOV DX, 00FFH ; 用于存储最小值
+
+ 0018				FIND_LOOP:
+ 0018  8B 04			    MOV AX, [SI]
+ 001A  3B C3			    CMP AX, BX
+ 001C  76 02			    JBE NOT_MAX
+ 001E  8B D8			    MOV BX, AX     ; 更新最大值
+ 0020				NOT_MAX:
+ 0020  3B C2			    CMP AX, DX
+ 0022  73 02			    JAE NOT_MIN
+ 0024  8B D0			    MOV DX, AX     ; 更新最小值
+ 0026				NOT_MIN:
+ 0026  83 C6 04			    ADD SI, 4
+ 0029  E2 ED			    LOOP FIND_LOOP
+
+				    ; 将最大值存放在AH，最小值存放在AL
+ 002B  8B C3			    MOV AX, BX
+ 002D  8A E7			    MOV AH, BH
+ 002F  8A C2			    MOV AL, DL
+
+				    ;POP DX
+				    ;POP CX
+				    ;POP BX
+				    ;POP AX
+ 0031  C3			    RET
+ 0032				FIND_MAX_MIN ENDP
+				END MAIN
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 11:42:27
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+DGROUP . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	16 Bit	 3020	  Word	  Public  'DATA'	
+STACK  . . . . . . . . . . . . .	16 Bit	 0100	  Para	  Stack	  'STACK'	 
+_TEXT  . . . . . . . . . . . . .	16 Bit	 0032	  Word	  Public  'CODE'	
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+FIND_MAX_MIN . . . . . . . . . .	P Near	 0012	  _TEXT	Length= 0020 Public
+  FIND_LOOP  . . . . . . . . . .	L Near	 0018	  _TEXT	
+  NOT_MAX  . . . . . . . . . . .	L Near	 0020	  _TEXT	
+  NOT_MIN  . . . . . . . . . . .	L Near	 0026	  _TEXT	
+MAIN . . . . . . . . . . . . . .	P Near	 0000	  _TEXT	Length= 0012 Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 0000h	 
+@DataSize  . . . . . . . . . . .	Number	 0000h	 
+@Interface . . . . . . . . . . .	Number	 0000h	 
+@Model . . . . . . . . . . . . .	Number	 0002h	 
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 DGROUP
+@fardata?  . . . . . . . . . . .	Text   	 FAR_BSS
+@fardata . . . . . . . . . . . .	Text   	 FAR_DATA
+@stack . . . . . . . . . . . . .	Text   	 DGROUP
+BYTE_COUNT . . . . . . . . . . .	Number	 0008h	 
+DATA_ARRAY . . . . . . . . . . .	DWord	 3000	  _DATA	
+
+	   0 Warnings
+	   0 Errors

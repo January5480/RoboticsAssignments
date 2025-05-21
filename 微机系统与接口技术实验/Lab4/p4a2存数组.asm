@@ -1,0 +1,74 @@
+DATAS SEGMENT
+    ;此处输入数据段代码  
+    DAT DB 10 DUP(0)
+DATAS ENDS
+
+STACKS SEGMENT
+    ;此处输入堆栈段代码
+STACKS ENDS
+
+CODES SEGMENT
+    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+START:
+    MOV AX,DATAS
+    MOV DS,AX
+    ;此处输入代码段代码
+    MOV SI,OFFSET DAT
+    MOV CL,8
+    MOV DL,1
+    AND DX,00FFH
+    MOV [SI],DX
+    MOV DL,1
+    AND DX,00FFH
+    INC SI
+    MOV [SI],DX
+    MOV BH,1
+    MOV CH,1
+AGAIN:
+    MOV BL,BH
+    ADD BH,CH
+    MOV CH,BL
+    MOV DL,BH
+    AND DX,00FFH
+    INC SI
+    MOV [SI],DX
+    DEC CL
+    JNZ AGAIN
+    MOV BH,0AH
+	MOV SI,OFFSET DAT
+L1:
+	MOV DL,[SI]
+	MOV CX,1;计数 初始为1
+	MOV BL,10;每次除10
+ONE:
+	MOV AH,0;清零（存余数）
+	MOV AL,DL
+	DIV BL;除10
+	PUSH AX;进栈
+	CMP AL,0;是否已除净
+	JLE ENDL
+	MOV DL,AL
+	INC CX
+	JMP ONE		
+ENDL:
+	POP DX
+	XCHG DH,DL;余数转入DL
+	ADD DL,30H
+	MOV AH,2
+	INT 21H
+	LOOP ENDL
+	INC SI
+	DEC BH
+	MOV DL,' '
+	MOV AH,6
+	INT 21H
+	JNZ L1
+    MOV AH,4CH
+    INT 21H
+CODES ENDS
+    END START
+
+
+
+
+

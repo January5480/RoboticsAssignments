@@ -1,0 +1,54 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/04/24 17:08:30
+tempfile.asm						     Page 1 - 1
+
+
+				;默认采用ML6.11汇编程序
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  B8 4000			    MOV AX,4000H				;将4000H装到AX寄存器中
+ 0008  BB 4001			    MOV BX,4001H				;将4000H装到BX寄存器中，用于存储高位
+ 000B  BE 4002			    MOV SI,4002H				;将4000H装到AX寄存器中，用于存储低位
+ 000E  88 27			    MOV [BX],AH				;将AX高位存储到4001H
+ 0010  88 04			    MOV [SI],AL				;将AX地位存储到4002H
+ 0012  80 27 0F			    AND BYTE PTR [BX],0FH	;4001H高位清零
+ 0015  80 24 0F			    AND BYTE PTR [SI],0FH	;4002H高位清零
+ 0018  B4 4C			    MOV AH,4CH
+ 001A  CD 21			    INT 21H
+ 001C				CODES ENDS
+				    END START
+
+Microsoft (R) Macro Assembler Version 6.11		    12/04/24 17:08:30
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 001C	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

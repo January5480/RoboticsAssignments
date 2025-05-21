@@ -1,0 +1,122 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/12/24 21:25:27
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000 49 4E 50 55 54 3A		    STR1 DB 'INPUT: $'
+       20 24
+ 0008 4D 41 58 3A 24		    STR2 DB 'MAX:$'
+ 000D 4D 49 4E 3A 24		    STR3 DB 'MIN:$'
+ 0012 0D 0A 24			    newline db 0Dh, 0Ah, '$'  ; 用于换行
+ 0015 08			    inputBuffer db 8           ; 输入缓冲区, 存储8个字节
+
+ 0016				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+				;MAIN PROC NEAR
+ 0000					START:
+ 0000  B8 ---- R			    MOV AX,DATAS
+ 0003  8E D8				    MOV DS,AX
+					    ;此处输入代码段代码
+ 0005  BE 3000				    MOV SI,3000H
+ 0008  B9 0008				    MOV CX,8
+ 000B  8D 16 0000 R			    LEA DX,STR1
+ 000F  B4 09				    MOV AH,9
+ 0011  CD 21				    INT 21H;输出input提示
+ 0013  8D 16 0015 R			    lea dx, inputBuffer
+ 0017					CIN:
+ 0017  B4 01				    MOV AH,1
+ 0019  CD 21					INT 21H
+						
+ 001B  88 04					MOV [SI],AL
+ 001D  46					INC SI
+ 001E  49					DEC CX
+ 001F  75 F6					JNZ CIN
+						
+ 0021  B4 09					mov ah, 09h
+ 0023  8D 16 0012 R		   		lea dx, newline
+ 0027  CD 21			    	int 21h
+ 0029  8D 16 0015 R		    	lea dx, inputBuffer
+ 002D  B4 09			    	mov ah, 09h
+ 002F  CD 21			    	int 21h
+					    ;CALL MAX_MIN
+					    
+					    ;MOV DX OFFSET STR2
+					    ;MOV AH,9
+					    ;INT 21H
+ 0031  B4 4C				    MOV AH,4CH
+ 0033  CD 21				    INT 21H
+				;MAIN ENDP
+
+ 0035				MAX_MIN PROC NEAR
+ 0035					AGAIN:
+ 0035  BE 3000					MOV SI,3000H
+ 0038  B9 0008				    MOV CX,8
+ 003B  8A 3C					MOV BH,[SI]
+ 003D  8A DF					MOV BL,BH
+ 003F  46					INC SI
+ 0040  8A 04					MOV AL,[SI]
+ 0042  38 F8					CMP AL,BH
+ 0044  73 06					JAE GREATER
+ 0046  38 F8					CMP AL,BH
+ 0048  72 06					JB LOWER
+ 004A  EB 06					JMP NEXT
+ 004C					GREATER:
+ 004C  8A F8					MOV BH,AL
+ 004E  EB 02					JMP NEXT
+ 0050					LOWER:
+ 0050  8A D8				    MOV BL,AL 
+ 0052					NEXT:
+ 0052  49					DEC CX
+ 0053  75 E0					JNZ AGAIN
+ 0055  C3				RET
+ 0056				MAX_MIN ENDP
+					
+ 0056				CODES ENDS
+				    END START
+Microsoft (R) Macro Assembler Version 6.11		    12/12/24 21:25:27
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0056	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0016	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+MAX_MIN  . . . . . . . . . . . .	P Near	 0035	  CODES	Length= 0021 Public
+  AGAIN  . . . . . . . . . . . .	L Near	 0035	  CODES	
+  GREATER  . . . . . . . . . . .	L Near	 004C	  CODES	
+  LOWER  . . . . . . . . . . . .	L Near	 0050	  CODES	
+  NEXT . . . . . . . . . . . . .	L Near	 0052	  CODES	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+CIN  . . . . . . . . . . . . . .	L Near	 0017	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+STR1 . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+STR2 . . . . . . . . . . . . . .	Byte	 0008	  DATAS	
+STR3 . . . . . . . . . . . . . .	Byte	 000D	  DATAS	
+inputBuffer  . . . . . . . . . .	Byte	 0015	  DATAS	
+newline  . . . . . . . . . . . .	Byte	 0012	  DATAS	
+
+	   0 Warnings
+	   0 Errors

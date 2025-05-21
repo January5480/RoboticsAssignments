@@ -1,0 +1,78 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/19/24 19:58:10
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000 0A			    d db 10
+ 0001				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+
+ 0005  B8 007B			    mov ax, 123; 将 ax 赋值 123
+ 0008  BC 000A			    mov sp, 10; cl 是每次 除以 10
+ 000B  BD 0000			    mov bp, 0; 计算 除了多少次，也就是有几位
+				    
+ 000E  F7 F4			L0:	div sp; ax 除以 cl
+ 0010  50				push ax; 此时的商存储在 al 中，
+					;余数存储在 ah 中，此时 ax = ah
+ 0011  83 C5 01				add bp, 1
+ 0014  B4 00				mov ah, 0
+ 0016  83 F8 00				cmp ax, 0;如果 ax 是 0，说明除干净了
+ 0019  75 F3				jne L0
+					
+ 001B  83 FD 00			again: cmp bp, 0; 此时 ch 的值就是位数，每次出栈，
+				;然后 ch 减一即可 
+ 001E  74 0D				je over
+ 0020  5A				pop dx; 把栈顶元素存储到 dx 中
+ 0021  8A D6				mov dl, dh;然后将 dl 的值等于 dh
+ 0023  80 C2 30				add dl, 48
+ 0026  B4 02				mov ah, 2
+ 0028  CD 21				int 21h
+					
+					; write by 唐昊翔
+ 002A  4D				dec bp
+ 002B  EB EE				jmp again
+ 002D				over:
+
+ 002D  B4 4C			    MOV AH,4CH
+ 002F  CD 21			    INT 21H
+ 0031				CODES ENDS
+				    END START
+
+Microsoft (R) Macro Assembler Version 6.11		    12/19/24 19:58:10
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0031	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0001	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+L0 . . . . . . . . . . . . . . .	L Near	 000E	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+again  . . . . . . . . . . . . .	L Near	 001B	  CODES	
+d  . . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+over . . . . . . . . . . . . . .	L Near	 002D	  CODES	
+
+	   0 Warnings
+	   0 Errors

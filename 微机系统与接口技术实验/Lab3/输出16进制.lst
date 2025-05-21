@@ -1,0 +1,84 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 08:29:54
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000 2A 2A 2A 2A 4D 41		    TEMP DB '****MAX_MIN: $'
+       58 5F 4D 49 4E 3A
+       20 24
+ 000E				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  BB 8923			    MOV BX,8923H
+ 0008  8B C3			    MOV AX,BX
+ 000A  BE 0003 R		    MOV SI,OFFSET TEMP+3;输出的偏移地址
+
+ 000D  33 C9			    XOR CX,CX
+ 000F  B1 04			    MOV CL,04H
+
+ 0011				    PRINT:
+ 0011  8A F0			    MOV DH,AL
+				    ;逻辑位移，保留低位,CL不能用
+ 0013  D1 E8			    SHR AX,1
+ 0015  D1 E8			    SHR AX,1
+ 0017  D1 E8			    SHR AX,1
+ 0019  D1 E8			    SHR AX,1
+
+ 001B  80 E6 0F			    AND DH,0FH;取低位
+ 001E  80 C6 30			    ADD DH,30H;变字母
+
+ 0021  80 FE 3A			    CMP DH,':';数字与字母的ascll界限
+ 0024  77 02			    JA IS;高于，是字符
+ 0026  72 03			    JB NO;低于，是数字
+
+ 0028				    IS:
+ 0028  80 C6 07			    ADD DH,07H;变字母
+ 002B				    NO:
+ 002B  88 34			    MOV [SI],DH
+
+ 002D  4E			    DEC SI
+ 002E  E2 E1			    LOOP PRINT
+ 0030  BA 0000 R			MOV DX,OFFSET TEMP
+ 0033  B4 09			    MOV AH,09H
+ 0035  CD 21			    INT 21H
+ 0037  B4 4C			    MOV AH,4CH
+ 0039  CD 21			    INT 21H
+ 003B				CODES ENDS
+				    END START
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 08:29:54
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 003B	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000E	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+IS . . . . . . . . . . . . . . .	L Near	 0028	  CODES	
+NO . . . . . . . . . . . . . . .	L Near	 002B	  CODES	
+PRINT  . . . . . . . . . . . . .	L Near	 0011	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+TEMP . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+
+	   0 Warnings
+	   0 Errors

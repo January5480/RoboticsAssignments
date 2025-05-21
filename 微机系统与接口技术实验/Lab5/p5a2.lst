@@ -1,0 +1,78 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/27/24 08:56:52
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000 41 42 43 44 45 45		    DATA1 DB 41H,42H,43H,44H,45H,45H,47H,48H,49H,50H,58H
+       47 48 49 50 58
+ 000B				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+				    
+ 0005  B5 00			    MOV CH,0
+ 0007  BE 0000 R		    MOV SI,OFFSET DATA1
+ 000A				AGAIN:
+ 000A  8A 04				MOV AL,[SI]
+ 000C  3C 00				CMP AL,0
+ 000E  74 1C				JE DONE
+ 0010  8A D0				MOV DL,AL
+ 0012  B4 02				MOV AH,02H	
+ 0014  CD 21				INT 21H
+ 0016  B2 20				MOV DL,' '
+ 0018  B4 02				MOV AH,02H	
+ 001A  CD 21				INT 21H
+ 001C  FE C5				INC CH
+ 001E  F6 C5 01				TEST CH,01H
+ 0021  75 06				JNZ NEXT
+ 0023  B2 0A				MOV DL,0AH
+ 0025  B4 02				MOV AH,02H
+ 0027  CD 21				INT 21H
+					
+ 0029				NEXT:
+ 0029  46				INC SI
+					
+ 002A  EB DE				JMP AGAIN
+ 002C				DONE:
+ 002C  B4 4C			    MOV AH,4CH
+ 002E  CD 21			    INT 21H
+ 0030				CODES ENDS
+				    END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/27/24 08:56:52
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0030	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000B	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+AGAIN  . . . . . . . . . . . . .	L Near	 000A	  CODES	
+DATA1  . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+DONE . . . . . . . . . . . . . .	L Near	 002C	  CODES	
+NEXT . . . . . . . . . . . . . .	L Near	 0029	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

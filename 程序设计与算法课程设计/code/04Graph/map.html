@@ -1,0 +1,190 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Arcgis API for JS实现最短路径</title>
+    <style>
+        /*设置网页样式*/
+        html, body, #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        /*设置按钮框样式*/
+        #panelDiv {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 50;
+            background-color: white;
+            border: 1px solid gray;
+            padding: 10px;
+            max-width: 200px;
+        }
+
+        /*设置按钮样式*/
+        #panelDiv button {
+            margin: 5px;
+            padding: 5px;
+            display: block;
+        }
+    </style>
+    
+    <!--https://js.arcgis.com/4.26/为API的地址  -->
+    <!--https://js.arcgis.com/4.26/esri/themes/light/main.css 为样式的地址  -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+    <div id="panelDiv">
+        <button id="startBtn">请设置路径起点</button>
+        <button id="endBtn">请设置路径终点</button>
+        <button id="clearBtn">清除路径</button>
+    </div>
+    <script>
+
+        //设置标记
+        first_click = false
+        sec_click = false
+        clear_click = true
+
+        require([
+            "esri/Map",//实例地图组件
+            "esri/views/MapView",
+            "esri/Graphic",
+            "esri/rest/route",
+            "esri/rest/support/RouteParameters",
+            "esri/rest/support/FeatureSet",
+            "esri/layers/MapImageLayer",
+            "esri/layers/GraphicsLayer",
+
+
+        ], function(
+            Map,
+            MapView,
+            Graphic,
+            route,
+            RouteParameters,
+            FeatureSet,
+            MapImageLayer,
+            GraphicsLayer,
+            ) {
+
+            // ————————————————————加载图层，GraphicsLayer是一种客户端图层（根据坐标以及形状生成相应的图形然后在地图显示出来），为了把我们的图层加载进去，看起来更方便——————————————————
+            const routeLayer = new GraphicsLayer();
+
+            // 我们自己的图层，这个url可以在我们发布的服务中点击服务的图像查看（把后面的?f=jsapi删掉），还可以在服务-功能-底图中复制REST URL————————————————————————————————
+            const layer = new MapImageLayer({
+                url: "http://DESKTOP-A62LI37:6080/arcgis/rest/services/Test01/LzyNAServer/MapServer",
+            })
+
+            // 创建map，创建一个地图，为了一会在地图容器中显示出来，basemap选择底图是什么样式的
+
+            const mymap = new Map({
+                // 可选择的属性有 arcgis-navigation，topo，streets，satellite，hybrid，dark-gray，gray，national-geographic，
+                // oceans，osm，terrain，dark-gray-vector，gray-vector，streets-vector，streets-night-vector，
+                // streets-navigation-vector，topo-vector，streets-relief-vector
+                basemap: "satellite",  //Basemap layer service
+                layers: [routeLayer, layer]
+            });
+
+            // 创建地图容器，为了在网页中能显示我们的地图 视图有两种类型:MapView和SceneView。MapView以2D方式呈现地图及其图层。SceneView将这些元素呈现为3D。View是MapView和SceneView的基类，没有构造函数
+            const view = new MapView({
+                container: "viewDiv",
+                map: mymap,
+                // center: [-118.24532,34.05398], //Longitude, latitude
+                center: [117.19181 , 31.77169 ], //Longitude, latitude
+                zoom: 15 //缩放层级
+            });
+
+            // 这里是我们自己发布的arcgis Server 中的路网
+            const routeUrl = " http://DESKTOP-A62LI37:6080/arcgis/rest/services/Test01/LzyNAServer/NAServer/Route";
+
+            
+            // 监听button，设置点击按钮并添加监听事件
+            btn_start = document.getElementById("startBtn")
+            btn_end = document.getElementById("endBtn")
+            btn_clear = document.getElementById("clearBtn")
+            btn_start.addEventListener("click", function(event) {
+                first_click = true
+            })
+
+            btn_end.addEventListener("click", function(event) {
+                sec_click = true
+            })
+
+            btn_clear.addEventListener("click", function(event) {
+                view.graphics.removeAll();
+                first_click = false
+                sec_click = false
+                clear_click = true
+            })
+
+            // 在单击的位置搜索图形。视图事件可以用作屏幕位置
+            // 在实例上注册一个事件处理程序。调用此方法将事件与侦听器挂钩
+            view.on("click", function(event){
+                if (view.graphics.length === 0 && first_click === true && clear_click === true) {
+                    addGraphic("origin", event.mapPoint);
+                } else if(view.graphics.length === 1 && sec_click === true && clear_click === true) {
+                    addGraphic("destination", event.mapPoint);
+
+                    getRoute(); // Call the route service
+                    // 初始化门
+                    first_click = false
+                    sec_click = false
+                    clear_click = false
+                }
+
+            });
+
+            // ——————————————————————这个代码块写的是添加一个点要素的功能，可以设置样式大小颜色等——————————
+            function addGraphic(type, point) {
+                const graphic = new Graphic({
+                    symbol: {                           //symbol的实例是唯一的不可变的, 用于确保对象的属性不重复/要素符号化信息，点线面的颜色大小形状等控制
+                        type: "simple-marker",
+                        color: (type === "origin") ? "white" : "black",
+                        size: "8px"
+                    },
+                    geometry: point                     //地理信息
+                });
+                // 允许直接向视图中的默认图形添加图形
+                view.graphics.add(graphic);
+            }
+
+            // ————————这个代码块写的是获取路径功能，获取路径要素的信息并转成Array，然后把我们的路网信息routeUrl和路径要素信息输入到arcgis API中的solve函数中，获取最短路径
+            function getRoute() {
+                const routeParams = new RouteParameters({
+                    stops: new FeatureSet({
+                        features: view.graphics.toArray()
+                    }),
+                    returnDirections: false
+                });
+                route.solve(routeUrl, routeParams)
+                    .then(
+                        function(data) {
+                            data.routeResults.forEach(
+                                function(result) {
+                                    result.route.symbol = {
+                                        type: "simple-line",
+                                        color: [5, 150, 255],
+                                        width: 3
+                                    };
+                                    view.graphics.add(result.route);
+                                }
+                            );
+                        }
+                    )
+
+                    //如果遇到错误的话，通过console.log(error)打印错误
+                        .catch(function(error){
+                        console.log(error);
+                    })
+            }
+        });
+    </script>
+</head>
+<body>
+<div id="viewDiv"></div>
+</body>
+</html>
+

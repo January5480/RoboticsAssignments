@@ -1,0 +1,71 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/04/24 18:56:13
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+				    ;MOV DI, 12H       ; 将常数1234H加载到DI寄存器中，作为源数据
+ 0005  BE 4000				MOV SI, 4000H       ; 将内存地址4000H加载到SI寄存器，表示数据存储的目标地址
+					
+ 0008  C6 04 12				MOV BYTE PTR [SI],12H  ; 将DI寄存器中的数据（1234H）存储到4000H（即[SI]）
+					
+ 000B  8A 04				MOV AL, BYTE PTR [SI]  ; 从内存地址4000H加载数据到AX寄存器中，AX = 1234H
+ 000D  8A D8				MOV BL, AL            ; 将AX的值复制到BX寄存器，BX = 1234H
+					
+					; 清除高位并将结果存入4001H和4002H
+ 000F  80 E3 F0				AND BL, 0F0H         ; 保留BX的高字节，清除低字节。BX = 1200H
+ 0012  B1 04				MOV CL, 4              ; 设置CL寄存器为8，用于右移BX
+					
+ 0014  D2 EB				SHR BL, CL             ; 将BX右移8位，BX = 12H。现在BX的低位存储的是高位字节的值
+ 0016  88 5C 01				MOV [SI+1], BL         ; 将BX存储的低字节（12H）存入4001H（即[SI+1]）
+					
+ 0019  8A D8				MOV BL, AL             ; 将AX的值复制回BX寄存器，BX = 1234H
+ 001B  80 E3 0F				AND BL, 0FH          ; 清除BX的高字节，只保留低字节，BX = 34H
+ 001E  88 5C 02				MOV [SI+2], BL         ; 将BX存储的低字节（34H）存入4002H（即[SI+2]）
+
+					
+					; 程序结束后AX的值应为0034H，验证结果正确
+
+ 0021  F4				HLT                ; 程序结束
+
+ 0022  B4 4C			    MOV AH,4CH
+ 0024  CD 21			    INT 21H
+ 0026				CODES ENDS
+				    END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/04/24 18:56:13
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0026	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

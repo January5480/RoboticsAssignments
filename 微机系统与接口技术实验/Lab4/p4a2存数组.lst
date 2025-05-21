@@ -1,0 +1,108 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/20/24 09:01:05
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000  000A [			    DAT DB 10 DUP(0)
+        00
+       ]
+ 000A				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  BE 0000 R		    MOV SI,OFFSET DAT
+ 0008  B1 08			    MOV CL,8
+ 000A  B2 01			    MOV DL,1
+ 000C  81 E2 00FF		    AND DX,00FFH
+ 0010  89 14			    MOV [SI],DX
+ 0012  B2 01			    MOV DL,1
+ 0014  81 E2 00FF		    AND DX,00FFH
+ 0018  46			    INC SI
+ 0019  89 14			    MOV [SI],DX
+ 001B  B7 01			    MOV BH,1
+ 001D  B5 01			    MOV CH,1
+ 001F				AGAIN:
+ 001F  8A DF			    MOV BL,BH
+ 0021  02 FD			    ADD BH,CH
+ 0023  8A EB			    MOV CH,BL
+ 0025  8A D7			    MOV DL,BH
+ 0027  81 E2 00FF		    AND DX,00FFH
+ 002B  46			    INC SI
+ 002C  89 14			    MOV [SI],DX
+ 002E  FE C9			    DEC CL
+ 0030  75 ED			    JNZ AGAIN
+ 0032  B7 0A			    MOV BH,0AH
+ 0034  BE 0000 R			MOV SI,OFFSET DAT
+ 0037				L1:
+ 0037  8A 14				MOV DL,[SI]
+ 0039  B9 0001				MOV CX,1;计数 初始为1
+ 003C  B3 0A				MOV BL,10;每次除10
+ 003E				ONE:
+ 003E  B4 00				MOV AH,0;清零（存余数）
+ 0040  8A C2				MOV AL,DL
+ 0042  F6 F3				DIV BL;除10
+ 0044  50				PUSH AX;进栈
+ 0045  3C 00				CMP AL,0;是否已除净
+ 0047  7E 05				JLE ENDL
+ 0049  8A D0				MOV DL,AL
+ 004B  41				INC CX
+ 004C  EB F0				JMP ONE		
+ 004E				ENDL:
+ 004E  5A				POP DX
+ 004F  86 F2				XCHG DH,DL;余数转入DL
+ 0051  80 C2 30				ADD DL,30H
+ 0054  B4 02				MOV AH,2
+ 0056  CD 21				INT 21H
+ 0058  E2 F4				LOOP ENDL
+ 005A  46				INC SI
+ 005B  FE CF				DEC BH
+ 005D  B2 20				MOV DL,' '
+ 005F  B4 06				MOV AH,6
+ 0061  CD 21				INT 21H
+ 0063  75 D2				JNZ L1
+ 0065  B4 4C			    MOV AH,4CH
+ 0067  CD 21			    INT 21H
+ 0069				CODES ENDS
+				    END START
+
+
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/20/24 09:01:05
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0069	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000A	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+AGAIN  . . . . . . . . . . . . .	L Near	 001F	  CODES	
+DAT  . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+ENDL . . . . . . . . . . . . . .	L Near	 004E	  CODES	
+L1 . . . . . . . . . . . . . . .	L Near	 0037	  CODES	
+ONE  . . . . . . . . . . . . . .	L Near	 003E	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

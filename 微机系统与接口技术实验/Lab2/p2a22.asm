@@ -1,0 +1,38 @@
+DATAS SEGMENT
+    ;此处输入数据段代码  
+    PSD DB '123456'
+    BUF DB 6
+    	DB ? 
+    	DB 20 DUP(?)
+    BUF1 DB 'RIGHT!'
+DATAS ENDS
+
+STACKS SEGMENT
+    ;此处输入堆栈段代码
+STACKS ENDS
+
+CODES SEGMENT
+    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+START:
+    MOV AX,DATAS
+    MOV DS,AX
+    ;此处输入代码段代码
+  
+    LP:
+    MOV DX,OFFSET BUF
+    MOV AH,0AH
+    INT 21H
+    CMPS PSD,BUF
+    JZ RIGHT
+    JMP LP
+    
+RIGHT:
+    MOV DX,OFFSET BUF1
+    MOV AH,9
+    INT 21H
+
+    MOV AH,4CH
+    INT 21H
+    
+CODES ENDS
+    END START

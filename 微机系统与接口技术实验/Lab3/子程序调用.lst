@@ -1,0 +1,199 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 10:34:51
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+				    ORG 3000H
+ 3000 A9 12 8B E5 EB 47		    s1 db 0A9h, 12h, 8Bh, 0E5h, 0EBh, 47h, 9Dh, 0EFh
+       9D EF
+ 3008 2A 2A 2A 2A 2A 2A		    TEMP DB '*******MIN****** $'
+       2A 4D 49 4E 2A 2A
+       2A 2A 2A 2A 20 24
+ 301A 2A 2A 2A 2A 2A 2A		    TEMP1 DB '*******MAX****** $'
+       2A 4D 41 58 2A 2A
+       2A 2A 2A 2A 20 24
+ 302C 0D 0A 24			    CHANGELINE DB 13,10,'$'
+				     ; 输入的字节序列
+ 302F				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+
+ 0000					START:
+ 0000  B8 ---- R			    MOV AX,DATAS
+ 0003  8E D8				    MOV DS,AX
+					    ;此处输入代码段代码
+					    ;MOV SI,3000H
+ 0005  B9 0008				    MOV CX,8
+						
+ 0008  E8 0004				    CALL MAX_MIN
+					   ; MOV AX,BX
+					    ;CALL PRINTLOWER
+					   ; MOV DX,OFFSET CHANGELINE
+					   ; MOV AH,09H
+					   ; INT 21H
+					   ; CALL PRINTHIGHER
+ 000B  B4 4C				    MOV AH,4CH
+ 000D  CD 21				    INT 21H
+
+
+ 000F				MAX_MIN PROC NEAR
+ 000F  BE 3000 R				MOV SI,OFFSET S1
+ 0012  B9 0008				    MOV CX,8
+ 0015  B7 00				    MOV BH,00H
+ 0017  B3 FF				    MOV BL,0FFH
+ 0019					AGAIN:
+						
+ 0019  8A 04					MOV AL,[SI]
+						
+ 001B  38 F8					CMP AL,BH
+ 001D  73 06					JAE GREATER
+ 001F  38 D8					CMP AL,BL
+ 0021  76 06					JBE LOWER
+ 0023  EB 06					JMP NEXT
+ 0025					GREATER:
+ 0025  8A F8					MOV BH,AL
+ 0027  EB 02					JMP NEXT
+ 0029					LOWER:
+ 0029  8A D8				    MOV BL,AL 
+ 002B					NEXT:
+ 002B  46					INC SI
+ 002C  49					DEC CX
+ 002D  75 EA					JNZ AGAIN
+						
+						
+ 002F  C3				RET
+ 0030				MAX_MIN ENDP
+
+ 0030				PRINTLOWER PROC NEAR
+					
+ 0030  BE 3009 R		    MOV SI,OFFSET TEMP+1;输出的偏移地址
+
+ 0033  33 C9			    XOR CX,CX
+ 0035  B1 02			    MOV CL,02H
+
+ 0037				    PRINT:
+ 0037  8A F0				    MOV DH,AL
+					    
+ 0039  D1 E8				    SHR AX,1
+ 003B  D1 E8				    SHR AX,1
+ 003D  D1 E8				    SHR AX,1
+ 003F  D1 E8				    SHR AX,1
+					
+ 0041  80 E6 0F				    AND DH,0FH
+ 0044  80 C6 30				    ADD DH,30H
+					
+ 0047  80 FE 3A				    CMP DH,':'
+ 004A  77 02				    JA IS
+ 004C  72 03				    JB NO
+					
+ 004E				    IS:
+ 004E  80 C6 07				    ADD DH,07H
+ 0051				    NO:
+ 0051  88 34				    MOV [SI],DH
+					
+ 0053  4E				    DEC SI
+ 0054  E2 E1			    LOOP PRINT
+ 0056  BA 3008 R			MOV DX,OFFSET TEMP
+ 0059  B4 09			    MOV AH,09H
+ 005B  CD 21			    INT 21H
+ 005D  C3			    RET
+ 005E				PRINTLOWER ENDP
+
+ 005E				PRINTHIGHER PROC NEAR
+					
+ 005E  BE 301B R		    MOV SI,OFFSET TEMP1+1
+
+ 0061  33 C9			    XOR CX,CX
+ 0063  B1 02			    MOV CL,02H
+
+ 0065				    PRINT:
+ 0065  8A F0				    MOV DH,AL
+					   
+ 0067  D1 E8				    SHR AX,1
+ 0069  D1 E8				    SHR AX,1
+ 006B  D1 E8				    SHR AX,1
+ 006D  D1 E8				    SHR AX,1
+					
+ 006F  80 E6 0F				    AND DH,0FH
+ 0072  80 C6 30				    ADD DH,30H
+					
+ 0075  80 FE 3A				    CMP DH,':'
+ 0078  77 02				    JA IS
+ 007A  72 03				    JB NO
+					
+ 007C				    IS:
+ 007C  80 C6 07				    ADD DH,07H
+ 007F				    NO:
+ 007F  88 34				    MOV [SI],DH
+					
+ 0081  4E				    DEC SI
+ 0082  E2 E1			    LOOP PRINT
+ 0084  BA 301A R			MOV DX,OFFSET TEMP1
+ 0087  B4 09			    MOV AH,09H
+ 0089  CD 21			    INT 21H
+ 008B  C3			    RET
+ 008C				PRINTHIGHER ENDP
+					
+ 008C				CODES ENDS
+				    END START
+
+
+
+
+
+
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/13/24 10:34:51
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 008C	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 302F	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+MAX_MIN  . . . . . . . . . . . .	P Near	 000F	  CODES	Length= 0021 Public
+  AGAIN  . . . . . . . . . . . .	L Near	 0019	  CODES	
+  GREATER  . . . . . . . . . . .	L Near	 0025	  CODES	
+  LOWER  . . . . . . . . . . . .	L Near	 0029	  CODES	
+  NEXT . . . . . . . . . . . . .	L Near	 002B	  CODES	
+PRINTHIGHER  . . . . . . . . . .	P Near	 005E	  CODES	Length= 002E Public
+  PRINT  . . . . . . . . . . . .	L Near	 0065	  CODES	
+  IS . . . . . . . . . . . . . .	L Near	 007C	  CODES	
+  NO . . . . . . . . . . . . . .	L Near	 007F	  CODES	
+PRINTLOWER . . . . . . . . . . .	P Near	 0030	  CODES	Length= 002E Public
+  PRINT  . . . . . . . . . . . .	L Near	 0037	  CODES	
+  IS . . . . . . . . . . . . . .	L Near	 004E	  CODES	
+  NO . . . . . . . . . . . . . .	L Near	 0051	  CODES	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+CHANGELINE . . . . . . . . . . .	Byte	 302C	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+TEMP1  . . . . . . . . . . . . .	Byte	 301A	  DATAS	
+TEMP . . . . . . . . . . . . . .	Byte	 3008	  DATAS	
+s1 . . . . . . . . . . . . . . .	Byte	 3000	  DATAS	
+
+	   0 Warnings
+	   0 Errors

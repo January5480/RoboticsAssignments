@@ -1,0 +1,147 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/05/24 22:47:15
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 38 45 54 52 49 58		    SCORE DB 56, 69, 84, 82, 73, 88, 99, 63, 100, 80  ; 10个学生的成绩
+       63 3F 64 50
+
+				    ; 统计结果变量：每个变量表示一个成绩段的人数
+ 000A 00			    COUNT100 DB 0      ; 100分的人数
+ 000B 00			    COUNT90TO100 DB 0  ; 90到100分之间的人数
+ 000C 00			    COUNT80TO90 DB 0   ; 80到90分之间的人数
+ 000D 00			    COUNT70TO80 DB 0   ; 70到80分之间的人数
+ 000E 00			    COUNT60TO70 DB 0   ; 60到70分之间的人数
+ 000F 00			    COUNTBELOW60 DB 0  ; 60分以下的人数
+
+ 0010 52 65 73 75 6C 74		    MSGRESULT DB 'Results:', 0Dh, 0Ah, '$'
+       73 3A 0D 0A 24
+ 001B				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ; 堆栈段代码可以根据需要设置
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES, DS:DATAS, SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX 
+				   ; 遍历成绩数据
+ 0005  8D 36 0000 R		    LEA SI, SCORE   ; SI指向成绩数据数组
+ 0009  B9 000A			    MOV CX, 10      ; 循环次数，处理10个成绩
+ 000C				CHECK_SCORES:
+ 000C  8A 04			    MOV AL, [SI]    ; 读取当前成绩
+ 000E  46			    INC SI          ; 移动到下一个成绩
+				    ; 判断成绩并更新相应的统计
+ 000F  3C 64			    CMP AL, 100     ; 如果成绩是100
+ 0011  74 12			    JE  SCORE100
+ 0013  3C 5A			    CMP AL, 90      ; 如果成绩在90到100之间
+ 0015  73 14			    JAE SCORE90TO100
+ 0017  3C 50			    CMP AL, 80      ; 如果成绩在80到90之间
+ 0019  73 16			    JAE SCORE80TO90
+ 001B  3C 46			    CMP AL, 70      ; 如果成绩在70到80之间
+ 001D  73 18			    JAE SCORE70TO80
+ 001F  3C 3C			    CMP AL, 60      ; 如果成绩在60到70之间
+ 0021  73 1A			    JAE SCORE60TO70
+				    ; 60分以下
+ 0023  EB 1E			    JMP SCOREBELOW60
+ 0025				SCORE100:
+ 0025  FE 06 000A R		    INC BYTE PTR [COUNT100]  ; 100分的人数加1
+ 0029  EB 1C			    JMP NEXT_SCORE
+ 002B				SCORE90TO100:
+ 002B  FE 06 000B R		    INC BYTE PTR [COUNT90TO100] ; 90到100分的人数加1
+ 002F  EB 16			    JMP NEXT_SCORE
+ 0031				SCORE80TO90:
+ 0031  FE 06 000C R		    INC BYTE PTR [COUNT80TO90]  ; 80到90分的人数加1
+ 0035  EB 10			    JMP NEXT_SCORE
+ 0037				SCORE70TO80:
+ 0037  FE 06 000D R		    INC BYTE PTR [COUNT70TO80]  ; 70到80分的人数加1
+ 003B  EB 0A			    JMP NEXT_SCORE
+ 003D				SCORE60TO70:
+ 003D  FE 06 000E R		    INC BYTE PTR [COUNT60TO70]  ; 60到70分的人数加1
+ 0041  EB 04			    JMP NEXT_SCORE
+ 0043				SCOREBELOW60:
+ 0043  FE 06 000F R		    INC BYTE PTR [COUNTBELOW60]  ; 60分以下的人数加1
+ 0047				NEXT_SCORE:
+ 0047  E2 C3			    LOOP CHECK_SCORES    ; 循环处理下一个成绩
+				    ; 输出统计结果
+ 0049  8D 16 0010 R		    LEA DX, MSGRESULT
+ 004D  B4 09			    MOV AH, 09H
+ 004F  CD 21			    INT 21H
+				    ; 输出每个分数段的人数
+				    ; 100分的人数
+ 0051  8D 36 000A R		    LEA SI, COUNT100
+ 0055  E8 0027			    CALL PRINTCOUNT
+				    ; 90-100分之间的人数
+ 0058  8D 36 000B R		    LEA SI, COUNT90TO100
+ 005C  E8 0020			    CALL PRINTCOUNT
+				    ; 80-90分之间的人数
+ 005F  8D 36 000C R		    LEA SI, COUNT80TO90
+ 0063  E8 0019			    CALL PRINTCOUNT
+				    ; 70-80分之间的人数
+ 0066  8D 36 000D R		    LEA SI, COUNT70TO80
+ 006A  E8 0012			    CALL PRINTCOUNT
+				    ; 60-70分之间的人数
+ 006D  8D 36 000E R		    LEA SI, COUNT60TO70
+ 0071  E8 000B			    CALL PRINTCOUNT
+				    ; 60分以下的人数
+ 0074  8D 36 000F R		    LEA SI, COUNTBELOW60
+ 0078  E8 0004			    CALL PRINTCOUNT
+				    ; 程序退出
+ 007B  B4 4C			    MOV AH, 4CH
+ 007D  CD 21			    INT 21H
+				; 输出统计结果
+ 007F				PRINTCOUNT:
+ 007F  8A 04			    MOV AL, [SI]  ; 读取统计结果
+ 0081  04 30			    ADD AL, '0'    ; 转换为ASCII字符
+ 0083  8A D0			    MOV DL, AL     ; 存储要输出的字符
+ 0085  B4 02			    MOV AH, 02H
+ 0087  CD 21			    INT 21H
+ 0089  C3			    RET
+ 008A  B4 4C			    MOV AH, 4CH
+ 008C  CD 21			    INT 21H
+ 008E				CODES ENDS
+				    END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/05/24 22:47:15
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 008E	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 001B	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+CHECK_SCORES . . . . . . . . . .	L Near	 000C	  CODES	
+COUNT100 . . . . . . . . . . . .	Byte	 000A	  DATAS	
+COUNT60TO70  . . . . . . . . . .	Byte	 000E	  DATAS	
+COUNT70TO80  . . . . . . . . . .	Byte	 000D	  DATAS	
+COUNT80TO90  . . . . . . . . . .	Byte	 000C	  DATAS	
+COUNT90TO100 . . . . . . . . . .	Byte	 000B	  DATAS	
+COUNTBELOW60 . . . . . . . . . .	Byte	 000F	  DATAS	
+MSGRESULT  . . . . . . . . . . .	Byte	 0010	  DATAS	
+NEXT_SCORE . . . . . . . . . . .	L Near	 0047	  CODES	
+PRINTCOUNT . . . . . . . . . . .	L Near	 007F	  CODES	
+SCORE100 . . . . . . . . . . . .	L Near	 0025	  CODES	
+SCORE60TO70  . . . . . . . . . .	L Near	 003D	  CODES	
+SCORE70TO80  . . . . . . . . . .	L Near	 0037	  CODES	
+SCORE80TO90  . . . . . . . . . .	L Near	 0031	  CODES	
+SCORE90TO100 . . . . . . . . . .	L Near	 002B	  CODES	
+SCOREBELOW60 . . . . . . . . . .	L Near	 0043	  CODES	
+SCORE  . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

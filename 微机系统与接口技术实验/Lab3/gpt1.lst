@@ -1,0 +1,151 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/12/24 22:09:57
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ; 数据段
+ 0000 49 4E 50 55 54 3A		    STR1 DB 'INPUT: $'
+       20 24
+ 0008 4D 41 58 3A 20 24		    STR2 DB 'MAX: $'
+ 000E 4D 49 4E 3A 20 24		    STR3 DB 'MIN: $'
+ 0014 D9 07 8B C5 EB 04		    s1 db 0D9h, 07h, 8Bh, 0C5h, 0EBh, 04h, 9Dh, 0F9h ; 输入的字节序列
+       9D F9
+ 001C				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ; 堆栈段
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES, DS:DATAS, SS:STACKS
+
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+				    ; 输出提示字符串
+ 0005  8D 16 0000 R		    LEA DX, STR1
+ 0009  B4 09			    MOV AH, 09h
+ 000B  CD 21			    INT 21h   ; 输出"INPUT: "提示
+
+				    ; 计算最大值和最小值
+ 000D  E8 0004			    CALL MAX_MIN
+
+				    ; 结束程序
+ 0010  B4 4C			    MOV AH, 4Ch
+ 0012  CD 21			    INT 21h
+
+ 0014				MAX_MIN PROC NEAR
+				    ; 初始化
+ 0014  BE 3000			    MOV SI, 3000H         ; 数据段地址
+ 0017  B9 0008			    MOV CX, 8             ; 字节数量
+ 001A  B7 00			    MOV BH, 0             ; 初始最大值
+ 001C  B3 FF			    MOV BL, 0FFh          ; 初始最小值
+
+ 001E				AGAIN:
+ 001E  8A 04			    MOV AL, [SI]          ; 读取当前字节
+ 0020  38 F8			    CMP AL, BH            ; 比较当前字节与最大值
+ 0022  73 06			    JAE GREATER           ; 如果当前字节大于等于最大值，更新最大值
+ 0024  38 D8			    CMP AL, BL            ; 比较当前字节与最小值
+ 0026  76 06			    JBE LOWER             ; 如果当前字节小于等于最小值，更新最小值
+ 0028  EB 06			    JMP NEXT              ; 继续下一个字节
+
+ 002A				GREATER:
+ 002A  8A F8			    MOV BH, AL            ; 更新最大值
+ 002C  EB 02			    JMP NEXT
+
+ 002E				LOWER:
+ 002E  8A D8			    MOV BL, AL            ; 更新最小值
+
+ 0030				NEXT:
+ 0030  46			    INC SI                ; 指向下一个字节
+ 0031  49			    DEC CX                ; 字节数量减1
+ 0032  75 EA			    JNZ AGAIN             ; 如果还有字节，继续循环
+
+				    ; 输出最大值
+ 0034  8D 16 0008 R		    LEA DX, STR2
+ 0038  B4 09			    MOV AH, 09h
+ 003A  CD 21			    INT 21h               ; 输出 "MAX: "
+ 003C  8A D7			    MOV DL, BH            ; 取最大值
+ 003E  E8 000E			    CALL PrintBinary      ; 打印最大值（二进制）
+
+				    ; 输出最小值
+ 0041  8D 16 000E R		    LEA DX, STR3
+ 0045  B4 09			    MOV AH, 09h
+ 0047  CD 21			    INT 21h               ; 输出 "MIN: "
+ 0049  8A D3			    MOV DL, BL            ; 取最小值
+ 004B  E8 0001			    CALL PrintBinary      ; 打印最小值（二进制）
+
+ 004E  C3			    RET
+ 004F				MAX_MIN ENDP
+
+				; 子程序：打印一个字节的二进制值
+ 004F				PrintBinary PROC
+				    ; 输出一个字节的二进制数
+ 004F  B1 08			    MOV CL, 8             ; 打印 8 位
+ 0051  8A DA			    MOV BL, DL            ; 将数字放入 BL 寄存器
+ 0053  B6 80			    MOV DH, 80h           ; 1 << 7 (最高位为 1)
+
+ 0055				PrintBit:
+ 0055  84 DE			    TEST BL, DH           ; 测试当前最高位
+ 0057  74 04			    JZ PrintZero          ; 如果该位为 0，打印 0
+ 0059  B2 31			    MOV DL, '1'           ; 否则，打印 1
+ 005B  EB 02			    JMP PrintChar
+
+ 005D				PrintZero:
+ 005D  B2 30			    MOV DL, '0'           ; 打印 0
+
+ 005F				PrintChar:
+ 005F  B4 02			    MOV AH, 02h           ; DOS 输出字符
+ 0061  CD 21			    INT 21h               ; 输出字符
+ 0063  D0 E6			    SHL DH, 1             ; 左移，检查下一个位
+ 0065  E2 EE			    LOOP PrintBit         ; 重复直到所有位打印完毕
+
+ 0067  C3			    RET
+ 0068				PrintBinary ENDP
+
+ 0068				CODES ENDS
+				    END START
+
+Microsoft (R) Macro Assembler Version 6.11		    12/12/24 22:09:57
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0068	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 001C	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+MAX_MIN  . . . . . . . . . . . .	P Near	 0014	  CODES	Length= 003B Public
+  AGAIN  . . . . . . . . . . . .	L Near	 001E	  CODES	
+  GREATER  . . . . . . . . . . .	L Near	 002A	  CODES	
+  LOWER  . . . . . . . . . . . .	L Near	 002E	  CODES	
+  NEXT . . . . . . . . . . . . .	L Near	 0030	  CODES	
+PrintBinary  . . . . . . . . . .	P Near	 004F	  CODES	Length= 0019 Public
+  PrintBit . . . . . . . . . . .	L Near	 0055	  CODES	
+  PrintZero  . . . . . . . . . .	L Near	 005D	  CODES	
+  PrintChar  . . . . . . . . . .	L Near	 005F	  CODES	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+STR1 . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+STR2 . . . . . . . . . . . . . .	Byte	 0008	  DATAS	
+STR3 . . . . . . . . . . . . . .	Byte	 000E	  DATAS	
+s1 . . . . . . . . . . . . . . .	Byte	 0014	  DATAS	
+
+	   0 Warnings
+	   0 Errors

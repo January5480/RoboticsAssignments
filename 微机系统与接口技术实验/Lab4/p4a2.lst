@@ -1,0 +1,84 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/20/24 08:38:54
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  B1 08			    MOV CL,8
+ 0007  B2 01			    MOV DL,1
+ 0009  80 C2 30			    ADD DL,'0'
+ 000C  B4 06			    MOV AH,6
+ 000E  CD 21			    INT 21H
+ 0010  B2 20			    MOV DL,' '
+				    
+ 0012  B4 06			    MOV AH,6
+ 0014  CD 21			    INT 21H
+ 0016  B2 01			    MOV DL,1
+ 0018  80 C2 30			    ADD DL,'0'
+ 001B  B4 06			    MOV AH,6
+ 001D  CD 21			    INT 21H
+				    
+ 001F  B2 20			    MOV DL,' '
+				    
+ 0021  B4 06			    MOV AH,6
+ 0023  CD 21			    INT 21H
+ 0025  B7 01			    MOV BH,1
+ 0027  B5 01			    MOV CH,1
+ 0029				AGAIN:
+ 0029  8A DF			    MOV BL,BH
+ 002B  02 FD			    ADD BH,CH
+ 002D  8A EB			    MOV CH,BL
+ 002F  8A D7			    MOV DL,BH
+ 0031  80 C2 30			    ADD DL,'0'
+ 0034  B4 06			    MOV AH,6
+ 0036  CD 21			    INT 21H
+ 0038  B2 20			    MOV DL,' '
+				    
+ 003A  B4 06			    MOV AH,6
+ 003C  CD 21			    INT 21H
+ 003E  FE C9			    DEC CL
+ 0040  75 E7			    JNZ AGAIN
+				    
+ 0042  B4 4C			    MOV AH,4CH
+ 0044  CD 21			    INT 21H
+ 0046				CODES ENDS
+				    END START
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/20/24 08:38:54
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0046	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+AGAIN  . . . . . . . . . . . . .	L Near	 0029	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

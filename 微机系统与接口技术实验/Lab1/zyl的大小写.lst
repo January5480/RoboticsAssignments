@@ -1,0 +1,77 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/10/24 16:48:32
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				data segment
+ 0000 31 32 33 34 21 25		    str1 DB '1234!%ghijklnmopqrstuvwxyzABCDEFGHIGKLNMOPQRSTUVWXYZ', '$' 
+       67 68 69 6A 6B 6C
+       6E 6D 6F 70 71 72
+       73 74 75 76 77 78
+       79 7A 41 42 43 44
+       45 46 47 48 49 47
+       4B 4C 4E 4D 4F 50
+       51 52 53 54 55 56
+       57 58 59 5A 24
+ 0035				data ends
+ 0000				code segment
+				    assume cs:code, ds:data
+ 0000				start:
+ 0000  B8 ---- R		    MOV AX, data
+ 0003  8E D8			    MOV DS, AX
+ 0005  8D 1E 0000 R		    LEA BX, str1
+ 0009  B9 0034			    MOV CX, 52
+ 000C				S:
+ 000C  8A 07			    MOV AL, [BX]
+ 000E  3C 61			    CMP AL, 'a'
+ 0010  72 08			    JB upper 
+ 0012  3C 7A			    CMP AL, 'z'
+ 0014  77 04			    JA upper
+ 0016  24 DF			    AND AL, 11011111B ; 
+ 0018  EB 0A			    JMP store 
+ 001A				upper:
+ 001A  3C 41			    CMP AL, 'A'
+ 001C  72 06			    JB store
+ 001E  3C 5A			    CMP AL, 'Z'
+ 0020  77 02			    JA store
+ 0022  0C 20			    OR AL, 00100000B 
+ 0024				store:
+ 0024  88 07			    MOV [BX], AL
+ 0026  43			    INC BX
+ 0027  E2 E3			    LOOP S
+ 0029  8D 16 0000 R		    LEA DX, str1
+ 002D  B4 09			    MOV AH, 09H
+ 002F  CD 21			    INT 21H 
+ 0031  B4 4C			    MOV AH, 4CH
+ 0033  CD 21			    INT 21H 
+ 0035				code ends
+				end start
+
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/10/24 16:48:32
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+code . . . . . . . . . . . . . .	16 Bit	 0035	  Para	  Private 
+data . . . . . . . . . . . . . .	16 Bit	 0035	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+S  . . . . . . . . . . . . . . .	L Near	 000C	  code	
+start  . . . . . . . . . . . . .	L Near	 0000	  code	
+store  . . . . . . . . . . . . .	L Near	 0024	  code	
+str1 . . . . . . . . . . . . . .	Byte	 0000	  data	
+upper  . . . . . . . . . . . . .	L Near	 001A	  code	
+
+	   0 Warnings
+	   0 Errors

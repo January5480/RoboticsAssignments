@@ -1,0 +1,91 @@
+Microsoft (R) Macro Assembler Version 6.11		    12/10/24 16:51:33
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码
+ 0000 31 32 33 34 21 21		 	str1 DB '1234!!ghijklnmopqrstuvwxyzABCDEFGHIGKLNMOPQRSTUVWXYZ$'	
+       67 68 69 6A 6B 6C
+       6E 6D 6F 70 71 72
+       73 74 75 76 77 78
+       79 7A 41 42 43 44
+       45 46 47 48 49 47
+       4B 4C 4E 4D 4F 50
+       51 52 53 54 55 56
+       57 58 59 5A 24
+ 0035				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  B9 0034			    MOV CX,52
+ 0008  8D 36 0000 R		    LEA SI,STR1
+ 000C				AGAIN:
+ 000C  8A 04				MOV AL,[SI];
+ 000E  3C 41				CMP AL,'A'
+ 0010  72 0E				JB NEXT
+ 0012  3C 5A				CMP AL,'Z'
+ 0014  73 04				JAE GREAT
+ 0016  04 20				ADD AL,20H
+					;ADD AL,'0'
+ 0018  EB 06				JMP NEXT
+ 001A				GREAT:
+ 001A  3C 61				CMP AL,'a'
+ 001C  72 02				JB NEXT
+ 001E  2C 20				SUB AL,20H
+					;ADD AL,'0'
+ 0020				NEXT:
+ 0020  88 04				MOV [SI],AL
+ 0022  46				INC SI
+ 0023  49				DEC CX
+ 0024  75 E6				JNZ AGAIN
+ 0026  8D 16 0000 R			LEA DX,STR1
+ 002A  B4 09				MOV AH,09H
+ 002C  CD 21				INT 21H
+ 002E  B4 4C			    MOV AH,4CH
+ 0030  CD 21			    INT 21H
+ 0032				CODES ENDS
+				    END START
+
+
+
+
+
+
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    12/10/24 16:51:33
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0032	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0035	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0000	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+AGAIN  . . . . . . . . . . . . .	L Near	 000C	  CODES	
+GREAT  . . . . . . . . . . . . .	L Near	 001A	  CODES	
+NEXT . . . . . . . . . . . . . .	L Near	 0020	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+str1 . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+
+	   0 Warnings
+	   0 Errors
