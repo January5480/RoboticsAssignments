@@ -1,3 +1,6 @@
+
+
+
 function [x]=SplitArray(Array,n)
 x=cell(n,n);
 row=size(Array,1);

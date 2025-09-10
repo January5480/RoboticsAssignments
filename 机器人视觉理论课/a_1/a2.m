@@ -1,0 +1,13 @@
+clc;clear;close all;
+image1 = imread('Saved Pictures/e75cf81bc51138808609399b4d5120c.jpg');
+image2 = imread('Saved Pictures\OIP.jpg');
+image3 = imread('Saved Pictures\OIP (1).jpg');
+s = [size(image3,1),size(image3,2)];
+image2 = imresize(image2,s);
+image1 = imresize(image1,s);
+subplot(1,3,1);
+imshow(image1);
+subplot(1,3,2);
+imshow(image2);
+subplot(1,3,3);
+imshow(image3);

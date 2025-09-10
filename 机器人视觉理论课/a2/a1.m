@@ -1,0 +1,13 @@
+clc;clear;close all;
+image = imread('toyobjects.png');
+image1 = imnoise(image,"gaussian",0.3);
+image2 = medfilt2(image1,[3,3]);
+subplot(1,3,1);
+imshow(image);
+title('original image');
+subplot(1,3,2);
+imshow(image1);
+title('gaussian noise');
+subplot(1,3,3);
+imshow(image2);
+title('中值滤波');

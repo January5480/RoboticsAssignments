@@ -1,0 +1,2 @@
+net = squeezenet
+deepNetworkDesigner

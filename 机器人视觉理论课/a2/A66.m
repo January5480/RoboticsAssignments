@@ -1,0 +1,15 @@
+clc;clear;close all;
+image = imread('rice.png');
+subplot(3,2,1);imshow(image); title('原始图像');
+image1 = im2bw(image);
+subplot(3,2,2);imshow(image1); title('二值图像');
+SE = strel('square',3);
+image2 = imerode(image1,SE);
+subplot(3,2,3);imshow(image2); title('3*3腐蚀');
+image3 = imdilate(image1,SE);
+subplot(3,2,4);imshow(image3); title('3*3膨胀');
+SE1 = strel('rectangle',[3 4]);
+image4 = imerode(image1,SE1);
+subplot(3,2,5);imshow(image4); title('3*4腐蚀');
+image5 = imdilate(image1,SE1);
+subplot(3,2,6);imshow(image5); title('3*4膨胀');

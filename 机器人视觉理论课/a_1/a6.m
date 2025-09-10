@@ -1,0 +1,13 @@
+clc;clear;close all;
+image1 = imread('eight.tif');
+image2 = imrotate(image1,45,"bilinear");
+image3 = imrotate(image1,-30,'bilinear');
+subplot(1,3,1);
+imshow(image1);
+title('original image');
+subplot(1,3,2);
+imshow(image2);
+title('顺时针旋转45');
+subplot(1,3,3);
+imshow(image3);
+title('逆时针旋转30');

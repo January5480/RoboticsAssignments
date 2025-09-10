@@ -1,0 +1,11 @@
+clc;clear;close all;
+M = 500;N = 500;
+u = - M/2 : (M/2 - 1);
+v = - N/2 : (N/2 - 1);
+[U,V] = meshgrid(u,v);
+D = sqrt(U.^2 + V.^2);
+D0 = 50;
+n = 5;
+H = 1./(1+(D./D0).^(2*n));
+figure;
+mesh(U,V,H);

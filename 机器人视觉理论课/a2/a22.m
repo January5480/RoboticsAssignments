@@ -1,0 +1,12 @@
+clc;clear;close all;
+image = imread('car_2.jpg');
+image1 = imread('foosball.jpg');
+g1 = imhist(image1);
+match = histeq(image,g1);
+figure;
+subplot(2,3,1);imshow(image);title('原始图像');
+subplot(2,3,2);imshow(image1);title('模板图像');
+subplot(2,3,3);imshow(match);title('规定化后图像');
+subplot(2,3,4);imhist(image);title('原始图像直方图');
+subplot(2,3,5);imhist(image1);title('模板图像直方图');
+subplot(2,3,6);imhist(match);title('规定化后图像直方图');
